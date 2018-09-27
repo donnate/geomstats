@@ -56,19 +56,22 @@ class HyperbolicSpace(EmbeddedManifold):
         Evaluate if a point belongs to the Hyperbolic space,
         i.e. evaluate if its squared norm in the Minkowski space is -1.
         """
-        point = gs.to_ndarray(point, to_ndim=2)
-        _, point_dim = point.shape
-        if point_dim is not self.dimension + 1:
+        #point = gs.to_ndarray(point, to_ndim=2)
+        point = gs.asarray(point)
+        point_dim = point.shape[-1]
+        print("point_dim", point_dim)
+        if point_dim != self.dimension + 1:
             if point_dim is self.dimension:
                 logging.warning(
                     'Use the extrinsic coordinates to '
                     'represent points on the hyperbolic space.')
-            return False
-
+            return gs.array([[False]])
         sq_norm = self.embedding_metric.squared_norm(point)
+        print("sq_norm",sq_norm)
         euclidean_sq_norm = gs.linalg.norm(point, axis=-1) ** 2
         euclidean_sq_norm = gs.to_ndarray(euclidean_sq_norm, to_ndim=2, axis=1)
         diff = gs.abs(sq_norm + 1)
+        print(euclidean_sq_norm)
         belongs = diff < tolerance * euclidean_sq_norm
         return belongs
 
